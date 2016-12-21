@@ -3,6 +3,7 @@ require 'action_dispatch/session/active_record_store'
 require "active_record/session_store/extension/logger_silencer"
 require 'active_support/core_ext/hash/keys'
 require 'multi_json'
+require 'php_serialize'
 
 module ActiveRecord
   module SessionStore
@@ -47,6 +48,8 @@ module ActiveRecord
             JsonSerializer
           when :hybrid then
             HybridSerializer
+          when :php then
+            PhpSerializer
           else
             self.serializer
         end
@@ -60,6 +63,17 @@ module ActiveRecord
 
         def self.dump(value)
           ::Base64.encode64(Marshal.dump(value))
+        end
+      end
+
+      # Use PHP Serializer with Base64 encoding
+      class PhpSerializer
+        def self.load(value)
+         PHP.unserialize(::Base64.decode64(value))
+        end
+
+        def self.dump(value)
+          ::Base64.encode64(PHP.serialize(value))
         end
       end
 
