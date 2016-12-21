@@ -69,7 +69,7 @@ module ActiveRecord
       # Use PHP Serializer with Base64 encoding
       class PhpSerializer
         def self.load(value)
-         PHP.unserialize(::Base64.decode64(value))
+         PHP.unserialize(::Base64.decode64(value), {}, true)
         end
 
         def self.dump(value)
